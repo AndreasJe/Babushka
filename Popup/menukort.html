@@ -10,34 +10,79 @@
     }
 
     img {
-      max-width: 100%;
+      height: 100px;
       object-fit: cover;
     }
 
-    main {
-      max-width: 1000px;
-    }
 
     .data-container {
       break-inside: avoid;
       margin: 0 auto;
       padding: 10px;
-      background: #ececec;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      width: 80vw;
       grid-gap: 10px;
+    }
 
+    h1,
+    .menu {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .valgt {
+      background-color: grey;
     }
 
 
     article {
+      background: #ececec;
       border: 1px solid #000;
       padding: 10px;
+      margin: auto;
+      width: 100%;
+      height: 100%;
+    }
+
+    #detalje {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background-color: hsla(282, 14%, 12%, 0.74);
+      top: 0;
+      left: 0;
     }
 
 
-    article :nth-child(odd) {}
+    #detalje .luk {
+      position: fixed;
+      top: 0;
+      right: 0;
+      font-size: 4rem;
+    }
+
+    #detalje #produkt {
+      background: #ececec;
+      width: 60vw;
+      min-height: 50vh;
+      margin: 4rem auto;
+      padding: 4rem;
+      background: white;
+    }
+
+    .skjul {
+      display: none;
+    }
+
+
+    #produkt {
+      margin: auto;
+      padding: 2em;
+      background-color: white;
+      top: 50%;
+    }
   </style>
 </head>
 
@@ -61,8 +106,8 @@
 
 
   <template>
-    <article id="liste">
-      <h2 id="produkt"></h2>
+    <article id="produkt">
+      <h2 id="ret"></h2>
       <img src="" alt="">
       <p id="kort">
       </p>
@@ -76,9 +121,13 @@
   <section id="detalje" class="skjul">
     <button class="luk">X</button>
     <article id="produkt">
-      <h2></h2>
-      <img class="billede" src="" alt="">
-      <p class="job">Alder: </p>
+      <h2 id="popup-ret"></h2>
+      <img src="" alt="">
+      <p id="popup-kort">
+      </p>
+      <p id="popup-lang"></p>
+      <p id="popup-pris">Pris: </p>
+      <p id="popup-op">Oprindelse: </p>
     </article>
   </section>
 
@@ -111,15 +160,13 @@
         if (filter == "alle" || filter == produkt.gsx$kategori.$t) {
           let klon = template.cloneNode(true).content;
 
-          klon.querySelector("#produkt").textContent = produkt.gsx$navn.$t;
+          klon.querySelector("#ret").textContent = produkt.gsx$navn.$t;
           klon.querySelector("#pris").textContent += produkt.gsx$pris.$t;
-          klon.querySelector("#kort").textContent += produkt.gsx$kort.$t;
-          klon.querySelector("#lang").textContent +=
-            produkt.gsx$lang.$t;
+          klon.querySelector("#kort").textContent = produkt.gsx$kort.$t;
           klon.querySelector("#op").textContent += produkt.gsx$oprindelse.$t;
           klon.querySelector("img").src += "/imgs/small/" + produkt.gsx$billede.$t + "-sm.jpg";
           klon.querySelector("img").alt += produkt.gsx$navn.$t;
-          klon.querySelector("#produkt").addEventListener("click", () => visDetalje(ret));
+          klon.querySelector("#produkt").addEventListener("click", () => visDetalje(produkt));
           // klon.querySelector("p").textContent += produkt.txt
           container.appendChild(klon);
         }
@@ -127,11 +174,13 @@
     }
 
 
+
     function addEventListenersToButtons() {
       document.querySelectorAll(".filter").forEach(elm => {
         elm.addEventListener("click", filtrering);
       })
     }
+
 
     function filtrering() {
       console.log(filter);
@@ -142,6 +191,26 @@
       })
       this.classList.add("valgt")
       visRetter();
+
+    }
+
+    function visDetalje(produkt) {
+      const klon = template.cloneNode(true).content;
+      detalje.classList.remove("skjul");
+      detalje.querySelector(".luk").addEventListener("click", () => detalje.classList.add("skjul"));
+
+
+      console.log(produkt.gsx$id.$t)
+
+      document.querySelector("#detalje #popup-ret").textContent = produkt.gsx$navn.$t;
+      document.querySelector("#detalje #popup-pris").textContent = `Pris: ${produkt.gsx$pris.$t};`
+      document.querySelector("#detalje #popup-kort").textContent = produkt.gsx$kort.$t;
+      document.querySelector("#detalje #popup-lang").textContent = produkt.gsx$lang.$t;
+      document.querySelector("#detalje #popup-op").textContent = `Oprindelse: ${produkt.gsx$oprindelse.$t};`
+      document.querySelector("#detalje img").src = "/imgs/small/" + produkt.gsx$billede.$t + "-sm.jpg";
+      document.querySelector("#detalje img").alt = produkt.gsx$navn.$t;
+
+      container.appendChild(klon);
     }
   </script>
 </body>
