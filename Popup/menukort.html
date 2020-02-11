@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Menu-kort med Pop-up funktion</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    img {
+      max-width: 100%;
+      object-fit: cover;
+    }
+
+    main {
+      max-width: 1000px;
+    }
+
+    .data-container {
+      break-inside: avoid;
+      margin: 0 auto;
+      padding: 10px;
+      background: #ececec;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+
+      grid-gap: 10px;
+
+    }
+
+
+    article {
+      border: 1px solid #000;
+      padding: 10px;
+    }
+
+
+    article :nth-child(odd) {}
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="menu">
+      <button class="filter valgt" data-kategori="alle">Alle</button>
+      <button class="filter" data-kategori="forretter">Forretter</button>
+      <button class="filter" data-kategori="hovedretter">Hovedretter</button>
+      <button class="filter" data-kategori="desserter">Desserter</button>
+      <button class="filter" data-kategori="drikkevarer">Drikkevarer</button>
+      <button class="filter" data-kategori="sideorders">Side orders</button>
+    </div>
+  </nav>
+  <header></header>
+
+  <h1 id="overskrift">Alle</h1>
+  <section class="data-container"></section>
+
+
+
+
+  <template>
+    <article id="liste">
+      <h2 id="produkt"></h2>
+      <img src="" alt="">
+      <p id="kort">
+      </p>
+      <p id="lang"></p>
+      <p id="pris">Pris: </p>
+      <p id="op">Oprindelse: </p>
+    </article>
+  </template>
+
+
+  <section id="detalje" class="skjul">
+    <button class="luk">X</button>
+    <article id="produkt">
+      <h2></h2>
+      <img class="billede" src="" alt="">
+      <p class="job">Alder: </p>
+    </article>
+  </section>
+
+
+  <script>
+    const container = document.querySelector(".data-container");
+    const template = document.querySelector("template");
+    const detalje = document.querySelector("#detalje");
+    let retter;
+    let alleRetter = [];
+    let filter = "alle";
+
+
+
+    document.addEventListener("DOMContentLoaded", getJson);
+
+
+    async function getJson() {
+      let jsonData = await fetch("https://spreadsheets.google.com/feeds/list/17Dd7DvkPaFamNUdUKlrFgnH6POvBJXac7qyiS6zNRw0/od6/public/values?alt=json");
+      retter = await jsonData.json();
+      visRetter();
+      addEventListenersToButtons();
+    }
+
+    function visRetter() {
+      container.innerHTML = "";
+      antal = retter.feed.entry.length;
+
+      retter.feed.entry.forEach(produkt => {
+        if (filter == "alle" || filter == produkt.gsx$kategori.$t) {
+          let klon = template.cloneNode(true).content;
+
+          klon.querySelector("#produkt").textContent = produkt.gsx$navn.$t;
+          klon.querySelector("#pris").textContent += produkt.gsx$pris.$t;
+          klon.querySelector("#kort").textContent += produkt.gsx$kort.$t;
+          klon.querySelector("#lang").textContent +=
+            produkt.gsx$lang.$t;
+          klon.querySelector("#op").textContent += produkt.gsx$oprindelse.$t;
+          klon.querySelector("img").src += "/imgs/small/" + produkt.gsx$billede.$t + "-sm.jpg";
+          klon.querySelector("img").alt += produkt.gsx$navn.$t;
+          klon.querySelector("#produkt").addEventListener("click", () => visDetalje(ret));
+          // klon.querySelector("p").textContent += produkt.txt
+          container.appendChild(klon);
+        }
+      })
+    }
+
+
+    function addEventListenersToButtons() {
+      document.querySelectorAll(".filter").forEach(elm => {
+        elm.addEventListener("click", filtrering);
+      })
+    }
+
+    function filtrering() {
+      console.log(filter);
+      filter = this.dataset.kategori;
+      document.querySelector("h1").textContent = this.textContent;
+      document.querySelectorAll(".filter").forEach(elm => {
+        elm.classList.remove("valgt");
+      })
+      this.classList.add("valgt")
+      visRetter();
+    }
+  </script>
+</body>
+
+</html>
