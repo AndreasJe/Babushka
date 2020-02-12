@@ -11,7 +11,7 @@
             height 60%;
             object-fit: contain;
         }
-        
+
         #detalje {
             position: fixed;
             width: 100vw;
@@ -21,17 +21,17 @@
             background-color: rgba(0, 0, 0, .8);
             overflow: scroll;
         }
-        
-        #detalje #luk {
+
+        #detalje .luk {
             position: fixed;
             top: 0;
             left: 0;
-            font-size: 4rem;
+            font-size: 2rem;
             cursor: pointer;
             margin: 1em;
         }
-        
-        #detalje .person {
+
+        #detalje #produkt {
             width: 60vw;
             min-height: 50vh;
             margin: auto;
@@ -45,11 +45,16 @@
 <body>
 
     <section id="detalje" class="skjul">
-        <button id="luk">back</button>
-        <article class="person">
-            <h2 class="navn">Navn</h2>
-            <img src="http://ale-kea.dk/images/alan_thumb.JPG" alt="" class="profil-billede">
-        </article>
+      <button class="luk">Gå Tilbage</button>
+      <article id="produkt">
+        <h2 id="detail-ret"></h2>
+        <img src="" alt="">
+        <p id="detail-kort">
+        </p>
+        <p id="detail-lang"></p>
+        <p id="detail-pris">Pris: </p>
+        <p id="detail-op">Oprindelse: </p>
+      </article>
     </section>
 
 
@@ -59,8 +64,8 @@
         const id = urlParams.get("id");
         console.log(id);
 
-        let personer = [];
-        const idSheet = "1XWWbfWszD7f4jHqp51V_oT3pkHuR-ceEUw4YtrvK7F0"; // fiktive personer T7 F20202
+        let retter = [];
+        const idSheet = "17Dd7DvkPaFamNUdUKlrFgnH6POvBJXac7qyiS6zNRw0";
         const endpoint = `https://spreadsheets.google.com/feeds/list/${idSheet}/od6/public/values?alt=json`;
 
         const detalje = document.querySelector("#detalje");
@@ -72,21 +77,30 @@
         }
         async function loadData() {
             const response = await fetch(endpoint);
-            personer = await response.json();
-            console.log(personer);
+            retter = await response.json();
+            console.log(retter);
 
-            visPersoner();
+            VisRetter();
         }
 
-        function visPersoner() {
+        function VisRetter() {
             detalje.querySelector("button").addEventListener("click", () => {
                 history.back();
             });
-            personer.feed.entry.forEach(person => {
-                if (person.gsx$id.$t == id) { // tjek hvilket køn personen har og sammenlign med filter eller vis alle
-                    detalje.querySelector(".navn").textContent = person.gsx$navn.$t;
-                    detalje.querySelector(".navn").textContent += " " + person.gsx$alder.$t;
-                    detalje.querySelector(".profil-billede").src = person.gsx$billede.$t;
+            retter.feed.entry.forEach(produkt => {
+                if (produkt.gsx$id.$t == id) { // tjek hvilket køn personen har og sammenlign med filter eller vis alle
+
+
+                        console.log(produkt.gsx$id.$t)
+
+                        document.querySelector("#detalje #detail-ret").textContent = produkt.gsx$navn.$t;
+                        document.querySelector("#detalje #detail-pris").textContent += produkt.gsx$pris.$t;
+                        document.querySelector("#detalje #detail-lang").textContent = produkt.gsx$lang.$t;
+                        document.querySelector("#detalje #detail-op").textContent += produkt.gsx$oprindelse.$t;
+                        document.querySelector("#detalje img").src += "/imgs/small/" + produkt.gsx$billede.$t + "-sm.jpg";
+                        document.querySelector("#detalje img").alt += produkt.gsx$navn.$t;
+
+                                                console.log(produkt.gsx$id.$t)
                 }
             });
         }
