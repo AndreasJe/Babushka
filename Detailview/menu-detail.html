@@ -130,7 +130,7 @@
                 klon.querySelector("#pris").textContent += produkt.gsx$pris.$t;
                 klon.querySelector("#kort").textContent = produkt.gsx$kort.$t;
                 klon.querySelector("#op").textContent += produkt.gsx$oprindelse.$t;
-                klon.querySelector("img").src += "/imgs/small/" + produkt.gsx$billede.$t + "-sm.jpg";
+                klon.querySelector("img").src = "imgs/small/" + produkt.gsx$billede.$t + "-sm.jpg";
                 klon.querySelector("img").alt += produkt.gsx$navn.$t;
                 klon.querySelector("#produkt").addEventListener("click", () => {
                         //visDetalje(person);
